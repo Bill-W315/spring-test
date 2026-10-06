@@ -1,0 +1,17 @@
+# Mock service configuration. All values are FAKE placeholders for testing the assistant's
+# denylist and secret redaction. Never put real credentials in this sample.
+spring:
+  application:
+    name: mock-order-service
+  profiles:
+    active: localhost
+
+server:
+  servlet:
+    context-path: /mock-order/v1
+
+# Read routines go to the replica unless this is true (see AbstractJooqDao).
+useWriteJooqConfigurationOnReadWrite: false
+
+hasher:
+  salt: FAKE-SALT-DO-NOT-USE

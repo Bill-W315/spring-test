@@ -1,0 +1,10 @@
+# FAKE credentials for testing the assistant's denylist. This file must never be readable by the bot.
+datasource:
+  write:
+    url: jdbc:mysql://fake-user:fake-password@mysql-primary.invalid:3306/Mock_Order
+    username: fake_writer
+    password: FAKE-PASSWORD-1
+  read:
+    url: jdbc:mysql://mysql-replica.invalid:3306/Mock_Order
+    username: fake_reader
+    password: FAKE-PASSWORD-2

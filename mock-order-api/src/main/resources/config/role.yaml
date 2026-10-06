@@ -1,0 +1,10 @@
+# Data rights required per operation (readable by the assistant; no secrets).
+# in_emp_data_rights is a bit mask passed to every stored procedure.
+roles:
+  order:
+    get: 1        # VIEW
+    add: 2        # EDIT
+    cancel: 2     # EDIT
+  refund:
+    get: 1        # VIEW
+    add: 4        # REFUND

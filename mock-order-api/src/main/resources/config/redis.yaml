@@ -1,0 +1,4 @@
+# FAKE values for testing the assistant's denylist.
+redis:
+  host: redis.invalid
+  password: FAKE-REDIS-PASSWORD

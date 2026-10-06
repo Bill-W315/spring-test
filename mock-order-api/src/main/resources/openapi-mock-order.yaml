@@ -1,0 +1,118 @@
+openapi: 3.0.1
+info:
+  title: Mock Order Service
+  description: Orders and refunds. Each resource has one POST endpoint; the request field op_code selects the operation.
+  version: 1.0.0
+servers:
+  - url: /mock-order/v1
+paths:
+  /orders:
+    post:
+      tags: [order]
+      summary: Order operations (op_code get | add | cancel)
+      operationId: ordersPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrderRequestBody' }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/OrderResponseBody' } } } }
+        '400': { description: Stored procedure or validation error, content: { application/json: { schema: { $ref: '#/components/schemas/BasicResponseBody' } } } }
+  /refunds:
+    post:
+      tags: [refund]
+      summary: Refund operations (op_code get | add)
+      operationId: refundsPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RefundRequestBody' }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/RefundResponseBody' } } } }
+        '400': { description: Stored procedure or validation error, content: { application/json: { schema: { $ref: '#/components/schemas/BasicResponseBody' } } } }
+components:
+  schemas:
+    OrderRequestBody:
+      type: object
+      required: [op_code]
+      properties:
+        op_code: { type: string, enum: [get, add, cancel] }
+        get_data:
+          type: object
+          description: "SP: order_get_list. Lists orders of the caller's company. Filters: order_id (hashed), status."
+          properties:
+            order_id: { type: string }
+            status: { type: string, enum: [CREATED, PAID, SHIPPED, CANCELLED] }
+        add_data:
+          type: object
+          description: "SP: order_create. Creates a PAID order; total_amount = sum(quantity * unit_price)."
+          properties:
+            customer_id: { type: string }
+            items:
+              type: array
+              items:
+                type: object
+                properties:
+                  sku: { type: string }
+                  quantity: { type: integer }
+                  unit_price: { type: number }
+        cancel_data:
+          type: object
+          description: "SP: order_cancel. Cancels a CREATED or PAID order. Shipped orders cannot be cancelled (sub_code ORDER_SHIPPED)."
+          properties:
+            order_id: { type: string }
+            reason: { type: string }
+    OrderModel:
+      type: object
+      properties:
+        order_id: { type: string, description: Hashed order id }
+        customer_id: { type: string, description: Hashed customer id }
+        status: { type: string }
+        total_amount: { type: number }
+        refund_amount: { type: number, description: "Sum of all refunds of the order; 0 when nothing was refunded." }
+        created_at: { type: string }
+    OrderResponseBody:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data: { type: array, items: { $ref: '#/components/schemas/OrderModel' } }
+    RefundRequestBody:
+      type: object
+      required: [op_code]
+      properties:
+        op_code: { type: string, enum: [get, add] }
+        get_data:
+          type: object
+          description: "SP: refund_get_list."
+          properties:
+            order_id: { type: string }
+        add_data:
+          type: object
+          description: "SP: refund_create. Refund amount must not exceed total_amount - refund_amount (sub_code REFUND_EXCEEDS_TOTAL)."
+          properties:
+            order_id: { type: string }
+            amount: { type: number }
+            reason: { type: string }
+    RefundModel:
+      type: object
+      properties:
+        refund_id: { type: string }
+        order_id: { type: string }
+        amount: { type: number }
+        reason: { type: string }
+        created_at: { type: string }
+    RefundResponseBody:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        data: { type: array, items: { $ref: '#/components/schemas/RefundModel' } }
+    BasicResponseBody:
+      type: object
+      properties:
+        code: { type: integer }
+        message: { type: string }
+        sub_code: { type: string }

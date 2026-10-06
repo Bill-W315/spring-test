@@ -1,0 +1,4 @@
+# FAKE values for testing the assistant's denylist.
+auth:
+  jwt-secret: FAKE-JWT-SECRET
+  issuer: https://login.invalid

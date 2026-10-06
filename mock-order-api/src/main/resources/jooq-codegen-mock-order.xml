@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- FAKE connection settings for testing the assistant's denylist. -->
+<configuration>
+  <jdbc>
+    <driver>com.mysql.cj.jdbc.Driver</driver>
+    <url>jdbc:mysql://codegen.invalid:3306/Mock_Order</url>
+    <user>fake_codegen</user>
+    <password>FAKE-CODEGEN-PASSWORD</password>
+  </jdbc>
+  <generator>
+    <database>
+      <inputSchema>Mock_Order</inputSchema>
+      <includes>.*</includes>
+      <includeTables>false</includeTables>
+      <includeRoutines>true</includeRoutines>
+    </database>
+    <target>
+      <packageName>com.example.mock.order.persistence.dao.jooq.mock_order</packageName>
+    </target>
+  </generator>
+</configuration>
